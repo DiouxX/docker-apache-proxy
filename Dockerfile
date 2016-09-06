@@ -1,5 +1,5 @@
 #Choose Debian
-FROM debian:lastest
+FROM debian:latest
 
 MAINTAINER DiouxX "github@diouxx.be"
 
