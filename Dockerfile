@@ -20,4 +20,4 @@ RUN a2enmod proxy \
 EXPOSE 80 443
 
 #Launch Apache2 on FOREGROUND
-ENTRYPOINT["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
