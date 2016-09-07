@@ -19,5 +19,10 @@ RUN a2enmod proxy \
 #Ports
 EXPOSE 80 443
 
+#Volumes
+VOLUME /opt/proxy-conf
+
 #Launch Apache2 on FOREGROUND
-ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+COPY apache-proxy-start.sh /opt/
+RUN chmod +x /opt/apache-proxy-start.sh
+ENTRYPOINT ["/opt/apache-proxy-start.sh"]
