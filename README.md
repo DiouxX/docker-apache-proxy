@@ -24,7 +24,7 @@ docker run --name apache-proxy --volumes-from proxy-data -p 80:80 -d diouxx/apac
 I recommanded to link also web site container. It's just my advice
 
 ```
-docker run --name apache-proxy link sitecontainer:sitecontainer --volumes-from proxy-data -p 80:80 -d diouxx/apache-proxy
+docker run --name apache-proxy --link sitecontainer:sitecontainer --volumes-from proxy-data -p 80:80 -d diouxx/apache-proxy
 ```
 
 [And an exemple proxy configurations](https://httpd.apache.org/docs/current/en/mod/mod_proxy.html)
