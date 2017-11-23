@@ -1,10 +1,18 @@
 # Apache Proxy on Docker
 
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Deploy](#deploy)
+3. [Recommended](#recommended)
+4. [SSL Support](#ssl-support)
+
+## Introduction
 Apache web server like proxy to Docker.
 
 Enable modules :
   * proxy
   * proxy_http
+  * ssl
 
 ## Deploy
 
@@ -37,4 +45,37 @@ docker run --name apache-proxy --link sitecontainer:sitecontainer --volumes-from
 	ProxyPassReverse "/" "http://sitecontainer/"
 
 </VirtualHost>
+```
+## SSL Support
+
+To use Apache proxy with HTTPS :
+
+* First, configure your virtual host with SSL support
+```html
+<VirtualHost *:80>
+        ServerName yoursite.domain.com
+
+        ProxyPass "/" "http://sitecontainer/"
+        ProxyPassReverse "/" "http://sitecontainer/"
+
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerName yoursite.domain.com
+
+        SSLEngine On
+
+        SSLCertificateFile /opt/ssl/yourcertificate.crt
+        SSLCertificateKeyFile /opt/ssl/yourcertificate.key
+
+        ProxyPass / http://sitecontainer/
+        ProxyPassReverse / http://sitecontainer/
+
+
+</VirtualHost>
+```
+
+* Then, link your SSL certificate folder by volumes. Example :
+```
+docker run --name apache-proxy --volumes yourssldirectory:/opt/ssl/ --volumes-from proxy-data -p 80:80 -p 443:443 -d diouxx/apache-proxy
 ```
