@@ -1,0 +1,62 @@
+#Docker Website
+#Web-data Container
+web-data:
+  image: busybox
+  container_name: web-data
+  volumes: 
+    - /var/www/html/:/var/www/html
+
+#Web Host config apache container
+web-host:
+  image: busybox
+  container_name: webhost-config
+  volumes: 
+    - /opt/web-host/:/opt/proxy-conf
+
+#GLPI container
+glpi:
+  image: diouxx/glpi
+  container_name: glpi
+  hostname: glpi
+  external_links:
+    - mysql:mysql
+  volumes_from: 
+    - web-data
+  volumes:
+    - /etc/timezone:/etc/timezone
+    - /etc/localtime:/etc/localtime
+  environment:
+    - TIMEZONE=Europe/Brussels
+  restart: always
+
+#Mediawiki container
+mediawiki:
+  image: diouxx/mediawiki
+  container_name: mediawiki
+  hostname: mediawiki
+  external_links:
+    - mysql:mysql
+  volumes_from: 
+    - web-data
+  volumes:
+    - /etc/timezone:/etc/timezone
+    - /etc/localtime:/etc/localtime
+  restart: always
+
+
+#Apache Proxy Container
+apache-proxy:
+ image: diouxx/apache-proxy
+ container_name: apache-proxy
+ hostname: apache-proxy
+ ports:
+  - "80:80"
+  - "443:443"
+ volumes_from:
+  - web-host
+ volumes: 
+  - /etc/ssl/private:/opt/ssl
+ links:
+  - glpi:glpi
+  - mediawiki:mediawiki
+ restart: always
