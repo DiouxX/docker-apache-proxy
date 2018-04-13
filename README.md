@@ -51,6 +51,8 @@ docker run --name apache-proxy --link sitecontainer:sitecontainer --volumes-from
 To use Apache proxy with HTTPS :
 
 * First, configure your virtual host with SSL support
+
+If you can use together HTTP and HTTPS port
 ```html
 <VirtualHost *:80>
         ServerName yoursite.domain.com
@@ -68,14 +70,43 @@ To use Apache proxy with HTTPS :
         SSLCertificateFile /opt/ssl/yourcertificate.crt
         SSLCertificateKeyFile /opt/ssl/yourcertificate.key
 
-        ProxyPass / http://sitecontainer/
-        ProxyPassReverse / http://sitecontainer/
+        SSLProxyEngine on
 
+        <Location />
+                ProxyPass / http://sitecontainer/
+                ProxyPassReverse / http://sitecontainer/
+        </Location>
+
+</VirtualHost>
+```
+
+If you can user only HTTPS port and force redirect
+```html
+<VirtualHost *:80>
+	ServerName yoursite.domain.com
+
+	Redirect permanent / https://yoursite.domain.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerName yoursite.domain.com
+	
+        SSLEngine On
+
+        SSLCertificateFile /opt/ssl/yourcertificate.crt
+        SSLCertificateKeyFile /opt/ssl/yourcertificate.key
+
+	SSLProxyEngine on
+	
+	<Location />
+        	ProxyPass http://sitecontainer/
+        	ProxyPassReverse http://sitecontainer/
+	</Location>
 
 </VirtualHost>
 ```
 
 * Then, link your SSL certificate folder by volumes. Example :
-```
+```sh
 docker run --name apache-proxy --volumes yourssldirectory:/opt/ssl/ --volumes-from proxy-data -p 80:80 -p 443:443 -d diouxx/apache-proxy
 ```
